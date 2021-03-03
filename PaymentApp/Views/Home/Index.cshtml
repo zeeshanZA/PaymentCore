@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Details</h1>
+    <br />
+    <div class="col-6 m-auto">
+        <input type="number" maxlength="16" class="form-control m-2" id="creditCardNumber" placeholder="Credit Card Number" style="" />
+        <span class="font-italic" style="font-size:12px">without dash(-). e.g 123456789123456</span>
+        <input type="text" class="form-control  m-2" id="cardHolder" placeholder="Card Holder" />
+        <input type="date" class="form-control m-2" id="expiryDate" placeholder="Card Holder" />
+        <input type="text" class="form-control m-2" id="securityCode" placeholder="Security Code" maxlength="3" />
+        <input type="number" class="form-control m-2" id="amount" placeholder="Amount" />
+        <br />
+        <div id="error" class="alert sm alert-danger d-none" style="padding:5px;">
+            error
+        </div>
+        <div id="success" class="alert alert-success d-none" style="padding:5px;">
+            success
+        </div>
+        <br />
+        <button class="btn btn-info btn-sm  m-2" id="pay">Pay</button>
+    </div>
+</div>
+
+<script>
+    (function ($) {
+
+        $("#pay").on("click",
+            function () {
+                $("#error").addClass('d-none');
+                $("#success").addClass('d-none');
+                var data = {
+                    amount: $("#amount").val() > 0 ? $("#amount").val() : 0,
+                    creditCardNumber: $("#creditCardNumber").val(),
+                    cardHolder: $("#cardHolder").val(),
+                    expirationDate: $("#expiryDate").val(),
+                    securityCode: $("#securityCode").val(),
+                }
+
+                var formData = new FormData();
+                formData.append('data', JSON.stringify(data));
+                $.ajax({
+                    url: "/api/PaymentApi/Post",
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        $("#success").removeClass('d-none');
+                        $("#success").html(res.responseText);
+                        $("#amount").val('');
+                        $("#creditCardNumber").val('');
+                        $("#cardHolder").val('');
+                        $("#expiryDate").val('');
+                        $("#securityCode").val('');
+                    },
+                    error: function (res) {
+                        $("#error").removeClass('d-none');
+                        $("#error").html(res.responseText);
+                    }
+                });
+            })
+    })(jQuery);
+</script>
